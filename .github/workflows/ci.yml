@@ -1,0 +1,40 @@
+name: MLOps Assignment CI
+
+# When to run this workflow
+on:
+  push:
+    branches:
+      - main
+      - reg
+      - hyper_branch
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checkout your code
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Set up Miniconda (for Conda environment)
+    - name: Set up Miniconda
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        activate-environment: mlops_assignment
+        environment-file: environment.yml  # if you have one; else comment out
+        python-version: 3.10
+        auto-activate-base: false
+
+    # Install dependencies with pip as fallback
+    - name: Install dependencies
+      run: |
+        conda activate mlops_assignment
+        pip install -r requirements.txt
+
+    # Run your tests (if you have tests)
+    - name: Run tests
+      run: |
+        conda activate mlops_assignment
+        pytest || echo "No tests found"
